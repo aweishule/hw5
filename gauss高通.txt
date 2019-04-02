@@ -1,0 +1,61 @@
+clear
+I=imread('Dstudydip第5次作业test4 copy.bmp');
+figure(1)
+subplot(1,2,1);
+imshow(I);
+title('test3 original');
+%imwrite(I,'test1 original.bmp');
+[P,Q]=size(I);
+ib=padarray(I,[P Q],'POST');%填充
+
+i=double(ib);
+H=zeros(2P,2Q);
+D=zeros(2P,2Q);
+G=zeros(2P,2Q);
+F=fft2(ib);
+F=fftshift(F);
+[P1,Q1]=size(ib);
+D0=75;
+for u=1P1
+    for v=1Q1
+        D(u,v)=sqrt((u-fix(P12))^2+(v-fix(Q12))^2);
+        H(u,v)=1-exp(-D(u,v)^2(2D0^2));
+        G(u,v)=H(u,v)F(u,v);
+    end
+end
+
+g=ifftshift(G);
+g=ifft2(g);
+
+g=uint8(real(g));
+g1=g(1P,1Q);
+subplot(1,2,2);
+imshow(g1);
+title('GUASS高通滤波D0=75');
+%imwrite(g,'test1 butterworth低通滤波（D0=25）.bmp');
+S=0;
+S1=0;
+
+for u1=1P
+    for v1=1Q
+        L1=(abs(G(u1,v1)))^2;
+        S1=S1+L1;
+        L=(abs(F(u1,v1)))^2;
+        S=S+L;
+    end
+end
+L=S1S;
+%绘制频谱图（显示为图像）
+figure(2)
+subplot(2,2,1);
+imshow(abs(255.F.max(max(F))));
+title('test4傅里叶谱');
+%imwrite(abs(255.F.max(max(F))),'test1的傅里叶谱.bmp');
+subplot(2,2,2);
+imshow(abs(H))
+title('GUASS高通滤波器（D0=75）');
+%imwrite(abs(H),'布特沃斯低通滤波器（D0=75）.bmp');
+subplot(2,2,3);
+imshow(abs(255.G.max(max(G))));
+title('滤波后图像的傅里叶谱');
+%imwrite(abs(255.G.max(max(G))),'test1布特沃斯低通滤波后的傅里叶谱（D0%3D75）.bmp');
